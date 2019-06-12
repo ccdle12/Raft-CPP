@@ -1,4 +1,4 @@
-# Cmake Project Example
+# C++ Raft
 
 ## Run Tests
 
