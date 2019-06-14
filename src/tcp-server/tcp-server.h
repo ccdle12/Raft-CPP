@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unistd.h>
 
+
 class TCPServer : public Server {
     public:
       TCPServer(unsigned int port) : port_{port} {};
@@ -19,8 +20,7 @@ class TCPServer : public Server {
       // Member Variables.
       unsigned int port_;
       sockaddr_in hint_, client_;
-      int sock_;
-      int client_conn_;
+      int sock_, client_conn_;
 
       // Internal Methods.
       void Socket();

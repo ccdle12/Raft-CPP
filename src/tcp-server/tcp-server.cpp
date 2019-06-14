@@ -2,7 +2,7 @@
 
 // Listen is the method implementation of the Server interface. It takes a port
 // number and runs the server to listen on the specified port.
-void TCPServer::Listen() 
+void TCPServer::Listen()
 {
     Socket();
     Hint();
