@@ -10,12 +10,11 @@ set(TEST_BINARY ${PROJECT_NAME}_test)
 
 # Include the test files as an executable.
 add_executable(${TEST_BINARY}
-                node.cpp
-                tcp-server.cpp)
+                test_tcp-server.cpp)
 
-# Link the blah library to the test binary.
+# Link the libraries to the test binary.
 target_link_libraries(${TEST_BINARY}
-                      node
+                      tcp-server
                       gtest gtest_main
 )
 
