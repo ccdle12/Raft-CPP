@@ -1,3 +1,4 @@
+#pragma once
 #include <arpa/inet.h>
 #include <string>
 #include "../server.h"
@@ -22,7 +23,7 @@ class TCPServer : public Server {
       int client_conn_;
 
       // Internal Methods.
-      void InitHint();
+      void Hint();
       void Bind();
       void Accept();
 };

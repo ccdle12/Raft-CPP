@@ -12,7 +12,7 @@ void TCPServer::Listen()
     }
 
     // Bind.
-    InitHint();
+    Hint();
     Bind();
 
     // Listen.
@@ -28,9 +28,9 @@ void TCPServer::Listen()
 }
 
 // InitHint is an internal method to initialise the hint.
-void TCPServer::InitHint()
+void TCPServer::Hint()
 {
-  hint_.sin_family = TCPServer::kIPV_;
+  hint_.sin_family = kIPV_;
   hint_.sin_port = htons(port_);
 
   // TODO: NEED TO FIX INADDR_ANY TO SOMETHING SAFER.
