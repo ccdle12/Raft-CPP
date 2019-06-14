@@ -8,9 +8,10 @@ include(CTest)
 # Set the variable for the test binary.
 set(TEST_BINARY ${PROJECT_NAME}_test)
 
-# Include the test file "test_blah.cpp" as an executable.
+# Include the test files as an executable.
 add_executable(${TEST_BINARY}
-                node.cpp)
+                node.cpp
+                server.cpp)
 
 # Link the blah library to the test binary.
 target_link_libraries(${TEST_BINARY}
