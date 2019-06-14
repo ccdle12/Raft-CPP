@@ -11,7 +11,7 @@ set(TEST_BINARY ${PROJECT_NAME}_test)
 # Include the test files as an executable.
 add_executable(${TEST_BINARY}
                 node.cpp
-                server.cpp)
+                tcp-server.cpp)
 
 # Link the blah library to the test binary.
 target_link_libraries(${TEST_BINARY}
