@@ -23,7 +23,9 @@ class TCPServer : public Server {
       int client_conn_;
 
       // Internal Methods.
+      void Socket();
       void Hint();
       void Bind();
+      void InitListen();
       void Accept();
 };

@@ -1,30 +1,24 @@
 #include "tcp-server.h"
 
-// Listen is the function implementation of the Server interface. It takes a port
+// Listen is the method implementation of the Server interface. It takes a port
 // number and runs the server to listen on the specified port.
 void TCPServer::Listen() 
 {
-    // Socket.
+    Socket();
+    Hint();
+    Bind();
+    InitListen();
+    Accept();
+}
+
+// Socket is an internal method to initialise the socket.
+void TCPServer::Socket()
+{
     if ((sock_ = socket(kIPV_, kProtocolType_, 0)) == -1)
     {
       // TODO: PLACEHOLDER
       throw 10;     
     }
-
-    // Bind.
-    Hint();
-    Bind();
-
-    // Listen.
-    // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ((listen(sock_, 5)) == -1)
-    {
-      // TODO: PLACEHOLDER
-      throw 12;
-    }
-
-    // Accept.
-    Accept();
 }
 
 // InitHint is an internal method to initialise the hint.
@@ -46,6 +40,17 @@ void TCPServer::Bind()
     // TODO: PLACEHOLDER
     throw 11; 
   }
+}
+
+// InitListen will start the server to listen for connections.
+void TCPServer::InitListen()
+{
+    // TODO: Set or use a maximum queue size, currently placeholder = 5;
+    if ((listen(sock_, 5)) == -1)
+    {
+      // TODO: PLACEHOLDER
+      throw 12;
+    }
 }
 
 // Accept will accept a new connection on the socket.
