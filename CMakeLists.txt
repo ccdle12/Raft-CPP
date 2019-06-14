@@ -8,9 +8,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-# Print out the project source dir
-message(STATUS "!!!!!!!!!!!!!!!!! ${PROJECT_SOURCE_DIR}")
-
 # NOTE: ALL subdirectories must have a CMakeList.
 add_subdirectory(${PROJECT_SOURCE_DIR}/src) # Add the src directory as subdirectory
 
