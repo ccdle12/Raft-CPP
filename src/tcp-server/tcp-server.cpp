@@ -1,7 +1,7 @@
 #include "tcp-server.h"
 
-// Listen is the method implementation of the Server interface. It takes a port
-// number and runs the server to listen on the specified port.
+// Listen is the method implementation of the Server interface. It runs the 
+// server by listening on the Port specified via construction.
 void TCPServer::Listen()
 {
     Socket();
