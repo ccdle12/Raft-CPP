@@ -41,8 +41,6 @@ void TCPServer::Hint()
 {
   hint_.sin_family = kIPV_;
   hint_.sin_port = htons(port_);
-
-  // TODO: NEED TO FIX INADDR_ANY TO SOMETHING SAFER.
   hint_.sin_addr.s_addr = INADDR_ANY;
   bzero(&TCPServer::hint_.sin_zero, 8); // Pad with zeroes.
 }
@@ -50,7 +48,7 @@ void TCPServer::Hint()
 // Bind will attach the IP and Port.
 void TCPServer::Bind()
 {
-  if ((bind(sock_fd_, (sockaddr*)&hint_, sizeof(sockaddr_in)) == -1))
+  if ((bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_)) == -1))
   {
     throw ErrMsg("Unable to bind hint to socket file descriptor");
   }
@@ -77,6 +75,7 @@ void TCPServer::Accept()
     {
       if (errno == EWOULDBLOCK)
       {
+        printf("No pending connections; sleeping for one second.\n");
         sleep(1);
       } else {
         throw ErrMsg("Error when accepting connection");
@@ -93,7 +92,7 @@ void TCPServer::Accept()
 
       close(client_conn_);
     }
-    }
+  }
 }
 
 // Close will force close the tcp-server.
