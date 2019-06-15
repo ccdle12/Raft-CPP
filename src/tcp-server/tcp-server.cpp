@@ -14,7 +14,7 @@ void TCPServer::Listen()
 // Socket is an internal method to initialise the socket.
 void TCPServer::Socket()
 {
-    if ((sock_ = socket(kIPV_, kProtocolType_, 0)) == -1)
+    if ((sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
     {
       // TODO: PLACEHOLDER
       throw 10;     
@@ -35,7 +35,7 @@ void TCPServer::Hint()
 // Bind will attach the IP and Port.
 void TCPServer::Bind()
 {
-  if ((bind(sock_, (sockaddr*)&hint_, sizeof(sockaddr_in)) == -1))
+  if ((bind(sock_fd_, (sockaddr*)&hint_, sizeof(sockaddr_in)) == -1))
   {
     // TODO: PLACEHOLDER
     throw 11; 
@@ -46,7 +46,7 @@ void TCPServer::Bind()
 void TCPServer::InitListen()
 {
     // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ((listen(sock_, 5)) == -1)
+    if ((listen(sock_fd_, 5)) == -1)
     {
       // TODO: PLACEHOLDER
       throw 12;
@@ -58,7 +58,7 @@ void TCPServer::Accept()
 {
   unsigned int len = sizeof(sockaddr_in);
   
-  if ((client_conn_ = accept(sock_, (sockaddr*)&client_, &len) == -1)) 
+  if ((client_conn_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1)) 
   {
     // TODO: PLACEHOLDER
     throw 14;
@@ -74,5 +74,11 @@ void TCPServer::Accept()
   std::cout << "Message sent was: " << msg << std::endl;
 
   close(client_conn_);
+}
+
+// Close will force close the tcp-server.
+void TCPServer::Close() const
+{
+  close(sock_fd_);
 }
 

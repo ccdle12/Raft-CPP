@@ -4,12 +4,13 @@
 #include "../server.h"
 #include <iostream>
 #include <unistd.h>
-
+#include <fcntl.h>
 
 class TCPServer : public Server {
     public:
       TCPServer(unsigned int port) : port_{port} {};
       void Listen() override;
+      void Close() const override;
 
     private:
       // Constants.
@@ -20,7 +21,7 @@ class TCPServer : public Server {
       // Member Variables.
       unsigned int port_;
       sockaddr_in hint_, client_;
-      int sock_, client_conn_;
+      int sock_fd_, client_conn_;
 
       // Internal Methods.
       void Socket();
