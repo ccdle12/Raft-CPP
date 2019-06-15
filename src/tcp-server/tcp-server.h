@@ -24,7 +24,7 @@ class TCPServer : public Server {
       // Member Variables.
       unsigned int port_;
       sockaddr_in hint_, client_;
-      int sock_fd_, client_conn_, fcntl_flags_;
+      int sock_fd_, client_fd_, fcntl_flags_;
 
       // Internal Methods.
       void Socket();

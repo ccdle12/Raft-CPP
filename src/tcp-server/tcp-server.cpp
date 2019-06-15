@@ -71,7 +71,7 @@ void TCPServer::Accept()
   
   while(true)
   {
-    if ((client_conn_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1))
+    if ((client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1))
     {
       if (errno == EWOULDBLOCK)
       {
@@ -84,7 +84,7 @@ void TCPServer::Accept()
       // TODO: PLACEHOLDER
       // Echo a message back to the client.
       std::string msg = "Hello";
-      int sent = send(client_conn_, &msg, msg.length(), 0);
+      int sent = send(client_fd_, &msg, msg.length(), 0);
       if (sent == -1)
       {
         std::cout << "Failed to send msg to client" << std::endl;
@@ -94,7 +94,7 @@ void TCPServer::Accept()
         std::cout << "Message sent was: " << msg << std::endl;
       }
 
-      close(client_conn_);
+      close(client_fd_);
     }
   }
 }
