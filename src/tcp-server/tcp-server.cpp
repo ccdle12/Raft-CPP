@@ -11,7 +11,7 @@ void TCPServer::Listen()
     Accept();
 }
 
-// Socket is an internal method to initialise the socket.
+// Socket is an internal method to initialise a non-blocking socket.
 void TCPServer::Socket()
 {
     if ((sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
@@ -19,6 +19,10 @@ void TCPServer::Socket()
       // TODO: PLACEHOLDER
       throw 10;     
     }
+
+    // TODO: Hanlde Errors.
+    fcntl_flags_ = fcntl(sock_fd_, F_GETFL);
+    fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK);
 }
 
 // InitHint is an internal method to initialise the hint.
@@ -60,20 +64,26 @@ void TCPServer::Accept()
   
   if ((client_conn_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1)) 
   {
+    if (errno == EWOULDBLOCK)
+    {
+      sleep(1);
+    } else {
+    // Error when accepting connections.
     // TODO: PLACEHOLDER
     throw 14;
+    }
+  } else {
+    // TODO: PLACEHOLDER
+    // Echo a message back to the client.
+    std::string msg = "Hello";
+    int sent = send(client_conn_, &msg, msg.length(), 0);
+
+    // NOTE: DEBUGGING
+    printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
+    std::cout << "Message sent was: " << msg << std::endl;
+
+    close(client_conn_);
   }
-
-  // TODO: PLACEHOLDER
-  // Echo a message back to the client.
-  std::string msg = "Hello";
-  int sent = send(client_conn_, &msg, msg.length(), 0);
-
-  // NOTE: DEBUGGING
-  printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-  std::cout << "Message sent was: " << msg << std::endl;
-
-  close(client_conn_);
 }
 
 // Close will force close the tcp-server.
