@@ -85,10 +85,14 @@ void TCPServer::Accept()
       // Echo a message back to the client.
       std::string msg = "Hello";
       int sent = send(client_conn_, &msg, msg.length(), 0);
-
-      // NOTE: DEBUGGING
-      printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-      std::cout << "Message sent was: " << msg << std::endl;
+      if (sent == -1)
+      {
+        std::cout << "Failed to send msg to client" << std::endl;
+      } else {
+        // NOTE: DEBUGGING
+        printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
+        std::cout << "Message sent was: " << msg << std::endl;
+      }
 
       close(client_conn_);
     }
