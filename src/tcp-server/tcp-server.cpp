@@ -4,11 +4,16 @@
 // server by listening on the Port specified via construction.
 void TCPServer::Listen()
 {
-    Socket();
-    Hint();
-    Bind();
-    InitListen();
-    Accept();
+    try {
+      Socket();
+      Hint();
+      Bind();
+      InitListen();
+      Accept();
+    } catch (std::string e) {
+      std::cout << e << std::endl;
+      exit(1);
+    }
 }
 
 // Socket is an internal method to initialise a non-blocking socket.
@@ -16,13 +21,19 @@ void TCPServer::Socket()
 {
     if ((sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
     {
-      // TODO: PLACEHOLDER
-      throw 10;     
+        throw ErrMsg("Unable to create socket");
     }
 
-    // TODO: Hanlde Errors.
-    fcntl_flags_ = fcntl(sock_fd_, F_GETFL);
-    fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK);
+    if ((fcntl_flags_ = fcntl(sock_fd_, F_GETFL) == -1))
+    {
+      throw ErrMsg("Unable to set fcntl flags");
+    }
+
+
+    if ((fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK) == -1))
+    {
+      throw ErrMsg("Unable to set non-blocking flags to socket file descriptor");
+    }
 }
 
 // InitHint is an internal method to initialise the hint.
@@ -41,8 +52,7 @@ void TCPServer::Bind()
 {
   if ((bind(sock_fd_, (sockaddr*)&hint_, sizeof(sockaddr_in)) == -1))
   {
-    // TODO: PLACEHOLDER
-    throw 11; 
+    throw ErrMsg("Unable to bind hint to socket file descriptor");
   }
 }
 
@@ -52,8 +62,7 @@ void TCPServer::InitListen()
     // TODO: Set or use a maximum queue size, currently placeholder = 5;
     if ((listen(sock_fd_, 5)) == -1)
     {
-      // TODO: PLACEHOLDER
-      throw 12;
+      throw ErrMsg("Unable to listen on socket");
     }
 }
 
@@ -68,9 +77,7 @@ void TCPServer::Accept()
     {
       sleep(1);
     } else {
-    // Error when accepting connections.
-    // TODO: PLACEHOLDER
-    throw 14;
+        throw ErrMsg("Error when accepting connection");
     }
   } else {
     // TODO: PLACEHOLDER

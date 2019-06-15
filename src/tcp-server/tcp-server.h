@@ -13,6 +13,9 @@ class TCPServer : public Server {
       void Close() const override;
 
     private:
+      // Aliases.
+      typedef std::string ErrMsg;
+
       // Constants.
       // TODO: HOW CAN WE DECIDE BETWEEN IPV4 AND IPV6?
       const int kIPV_ = AF_INET;
