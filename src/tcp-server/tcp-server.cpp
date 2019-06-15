@@ -71,26 +71,29 @@ void TCPServer::Accept()
 {
   unsigned int len = sizeof(sockaddr_in);
   
-  if ((client_conn_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1)) 
+  while(true)
   {
-    if (errno == EWOULDBLOCK)
+    if ((client_conn_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1))
     {
-      sleep(1);
-    } else {
+      if (errno == EWOULDBLOCK)
+      {
+        sleep(1);
+      } else {
         throw ErrMsg("Error when accepting connection");
+      }
+    } else {
+      // TODO: PLACEHOLDER
+      // Echo a message back to the client.
+      std::string msg = "Hello";
+      int sent = send(client_conn_, &msg, msg.length(), 0);
+
+      // NOTE: DEBUGGING
+      printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
+      std::cout << "Message sent was: " << msg << std::endl;
+
+      close(client_conn_);
     }
-  } else {
-    // TODO: PLACEHOLDER
-    // Echo a message back to the client.
-    std::string msg = "Hello";
-    int sent = send(client_conn_, &msg, msg.length(), 0);
-
-    // NOTE: DEBUGGING
-    printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-    std::cout << "Message sent was: " << msg << std::endl;
-
-    close(client_conn_);
-  }
+    }
 }
 
 // Close will force close the tcp-server.
