@@ -4,7 +4,6 @@
 // specified server.
 void TCPClient::Send()
 {
-
     try 
     {
       Socket();    
