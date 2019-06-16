@@ -75,7 +75,7 @@ void TCPServer::Accept()
     {
       if (errno == EWOULDBLOCK)
       {
-        printf("No pending connections; sleeping for one second.\n");
+        printf("SERVER: No pending connections; sleeping for one second.\n");
         sleep(1);
       } else {
         throw ErrMsg("Error when accepting connection");
@@ -85,14 +85,14 @@ void TCPServer::Accept()
       // Echo a message back to the client.
       std::string msg = "Hello";
       int sent = send(client_fd_, &msg, msg.length(), 0);
-      if (sent == -1)
-      {
-        std::cout << "Failed to send msg to client" << std::endl;
-      } else {
+      // if (sent == -1)
+      // {
+        // std::cout << "SERVER: Failed to send msg to client" << std::endl;
+      // } else {
         // NOTE: DEBUGGING
-        printf("Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-        std::cout << "Message sent was: " << msg << std::endl;
-      }
+        printf("SERVER: Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
+        std::cout << "SERVER: Message sent was: " << msg << std::endl;
+      // }
 
       close(client_fd_);
     }
