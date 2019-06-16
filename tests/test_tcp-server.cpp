@@ -9,7 +9,6 @@ const unsigned int LOCAL_PORT=5040;
 
 TEST(TestServerInit, OutputTest) {
     // Run the TCPServer on a background thread.
-    // TCPServer server = TCPServer(5040);
     TCPServer server = TCPServer(LOCAL_PORT);
     std::thread t1(&TCPServer::Listen, &server);
     t1.detach();
@@ -19,10 +18,6 @@ TEST(TestServerInit, OutputTest) {
 
     // Force close the server.
     server.Close();
-}
-
-TEST(TestClientInit, OutputTest) {
-  TCPClient client = TCPClient(LOCAL_HOST, LOCAL_PORT);
 }
 
 TEST(TestClientServer, OutputTest) {
