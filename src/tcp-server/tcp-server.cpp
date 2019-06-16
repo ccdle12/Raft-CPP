@@ -19,18 +19,18 @@ void TCPServer::Listen()
 // Socket is an internal method to initialise a non-blocking socket.
 void TCPServer::Socket()
 {
-    if ((sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
+    if ( (sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
     {
         throw ErrMsg("Unable to create socket");
     }
 
-    if ((fcntl_flags_ = fcntl(sock_fd_, F_GETFL) == -1))
+    if ( (fcntl_flags_ = fcntl(sock_fd_, F_GETFL)) == -1)
     {
       throw ErrMsg("Unable to set fcntl flags");
     }
 
 
-    if ((fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK) == -1))
+    if ( (fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK)) == -1)
     {
       throw ErrMsg("Unable to set non-blocking flags to socket file descriptor");
     }
@@ -48,7 +48,7 @@ void TCPServer::Hint()
 // Bind will attach the IP and Port.
 void TCPServer::Bind()
 {
-  if ((bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_)) == -1))
+  if ( (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))) == -1)
   {
     throw ErrMsg("Unable to bind hint to socket file descriptor");
   }
@@ -58,7 +58,7 @@ void TCPServer::Bind()
 void TCPServer::InitListen()
 {
     // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ((listen(sock_fd_, 5)) == -1)
+    if ( (listen(sock_fd_, 5)) == -1)
     {
       throw ErrMsg("Unable to listen on socket");
     }
@@ -71,7 +71,7 @@ void TCPServer::Accept()
   
   while(true)
   {
-    if ((client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len) == -1))
+    if ( (client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len)) == -1)
     {
       if (errno == EWOULDBLOCK)
       {
@@ -82,17 +82,17 @@ void TCPServer::Accept()
       }
     } else {
       // TODO: PLACEHOLDER
-      // Echo a message back to the client.
       std::string msg = "Hello";
       int sent = send(client_fd_, &msg, msg.length(), 0);
-      // if (sent == -1)
-      // {
-        // std::cout << "SERVER: Failed to send msg to client" << std::endl;
-      // } else {
+      if (sent == -1)
+      {
+        perror("SERVER: send failed");
+        std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
+      } else {
         // NOTE: DEBUGGING
         printf("SERVER: Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-        std::cout << "SERVER: Message sent was: " << msg << std::endl;
-      // }
+        std::cout << "SERVER: Message sent was: \n" << msg << std::endl;
+      }
 
       close(client_fd_);
     }
