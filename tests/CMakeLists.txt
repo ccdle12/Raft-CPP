@@ -15,6 +15,7 @@ add_executable(${TEST_BINARY}
 # Link the libraries to the test binary.
 target_link_libraries(${TEST_BINARY}
                       tcp-server
+                      tcp-client
                       gtest gtest_main
 )
 
