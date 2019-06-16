@@ -19,7 +19,7 @@ void TCPServer::Listen()
 // Socket is an internal method to initialise a non-blocking socket.
 void TCPServer::Socket()
 {
-    if ( (sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
+    if ( -1 == (sock_fd_ = socket(kIPV_, kProtocolType_, 0)))
     {
         throw ErrMsg("Unable to create socket");
     }
@@ -48,7 +48,7 @@ void TCPServer::Hint()
 // Bind will attach the IP and Port.
 void TCPServer::Bind()
 {
-  if ( (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))) == -1)
+  if ( -1 == (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))))
   {
     throw ErrMsg("Unable to bind hint to socket file descriptor");
   }
@@ -58,7 +58,7 @@ void TCPServer::Bind()
 void TCPServer::InitListen()
 {
     // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ( (listen(sock_fd_, 5)) == -1)
+    if ( -1 == (listen(sock_fd_, 5)))
     {
       throw ErrMsg("Unable to listen on socket");
     }
@@ -71,20 +71,21 @@ void TCPServer::Accept()
   
   while(true)
   {
-    if ( (client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len)) == -1)
+    if ( -1 == (client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len)))
     {
       if (errno == EWOULDBLOCK)
       {
         printf("SERVER: No pending connections; sleeping for one second.\n");
         sleep(1);
       } else {
+        perror("SERVER: accept error ");
         throw ErrMsg("Error when accepting connection");
       }
     } else {
       // TODO: PLACEHOLDER
       std::string msg = "Hello";
       int sent = send(client_fd_, &msg, msg.length(), 0);
-      if (sent == -1)
+      if (-1 == sent)
       {
         perror("SERVER: send failed");
         std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
