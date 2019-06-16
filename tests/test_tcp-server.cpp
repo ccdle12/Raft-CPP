@@ -14,7 +14,7 @@ TEST(TestServerInit, OutputTest) {
     t1.detach();
 
     // Sleep to give some time for the thread to run.
-    usleep(1000);
+    usleep(3000);
 
     // Force close the server.
     server.Close();
@@ -27,11 +27,13 @@ TEST(TestClientServer, OutputTest) {
     t1.detach();
 
     // Sleep to give some time for the thread to run.
-    usleep(1000);
+    usleep(3000);
 
     TCPClient client_1 = TCPClient(LOCAL_HOST, LOCAL_PORT);
     std::thread t2(&TCPClient::Send, &client_1);
     t2.detach();
+
+    usleep(3000);
 
     TCPClient client_2 = TCPClient(LOCAL_HOST, LOCAL_PORT);
     std::thread t3(&TCPClient::Send, &client_2);
