@@ -21,7 +21,7 @@ void TCPClient::Send()
 
 void TCPClient::Socket()
 {
-  if ((sock_fd_ = socket(kIPV_, kProtocolType_, 0)) == -1)
+  if ( -1 == (sock_fd_ = socket(kIPV_, kProtocolType_, 0)))
   {
      throw ErrMsg("Unable to create socket"); 
   }
@@ -51,7 +51,7 @@ void TCPClient::SendMsg()
   std::string msg = "Hello, this is the client";
 
   int sent = send(sock_fd_, &msg, msg.length(), 0);
-  if (sent == -1)
+  if (-1 == sent)
   {
     std::cout << "Failed to send messge" << std::endl;
   }
