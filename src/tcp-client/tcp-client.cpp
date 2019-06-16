@@ -49,13 +49,12 @@ void TCPClient::Connect()
 void TCPClient::SendMsg()
 {
   std::string msg = "Hello, this is the client";
-  // int sent = send(sock_fd_, &msg, msg.length(), 0);
-  printf("CLIENT: Sending msg to server\n");
-  send(sock_fd_, &msg, msg.length(), 0);
-  // if (sent == -1)
-  // {
-    // std::cout << "Failed to send messge" << std::endl;
-  // }
+
+  int sent = send(sock_fd_, &msg, msg.length(), 0);
+  if (sent == -1)
+  {
+    std::cout << "Failed to send messge" << std::endl;
+  }
 
   server_res_ = read(sock_fd_, buffer, 1024);
   printf("CLIENT: Received response from server: %s\n", buffer);
