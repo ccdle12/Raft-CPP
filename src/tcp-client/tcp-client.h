@@ -7,7 +7,7 @@
 class TCPClient : public Client {
   public:
    TCPClient(const std::string& address, unsigned int port) : port_{port}, address_{address} {};   
-   void Send() override; 
+   void Send(const std::string& msg) override; 
   
   private:
    // Aliases.
@@ -21,7 +21,7 @@ class TCPClient : public Client {
    unsigned int port_;
    int sock_fd_, server_res_;
    sockaddr_in server_addr_;
-   char buffer[1024];
+   char buffer_[1024];
    std::string address_;
 
    // Internal Methods.
@@ -30,5 +30,5 @@ class TCPClient : public Client {
    void Connect();
 
    // NOTE: TEMP
-   void SendMsg();
+   void SendMsg(const std::string& msg);
 };
