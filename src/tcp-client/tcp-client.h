@@ -8,6 +8,9 @@ class TCPClient : public Client {
   public:
    TCPClient(const std::string& address, unsigned int port) : port_{port}, address_{address} {};   
    void Send(const std::string& msg) override; 
+      
+   // TEMP
+   const std::string& GetBuffer() const override;
   
   private:
    // Aliases.

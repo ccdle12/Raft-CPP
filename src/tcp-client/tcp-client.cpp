@@ -9,8 +9,6 @@ void TCPClient::Send(const std::string& msg)
       Socket();    
       Bind();
       Connect();
-
-      // NOTE: TEMP
       SendMsg(msg);
     } catch (std::string e) {
       std::cout << e << std::endl;
@@ -55,4 +53,9 @@ void TCPClient::SendMsg(const std::string& msg)
 
   server_res_ = read(sock_fd_, buffer_, 1024);
   printf("CLIENT: Received response from server: %s\n", buffer_);
+}
+
+const std::string& TCPClient::GetBuffer() const
+{
+  return buffer_;
 }
