@@ -79,20 +79,19 @@ void TCPServer::Accept()
         sleep(1);
       } else {
         perror("SERVER: accept error ");
-        throw ErrMsg("Error when accepting connection");
+        throw ErrMsg("SERVER: Error when accepting connection\n");
       }
     } else {
       // TODO: PLACEHOLDER
-      std::string msg = "Hello";
-      int sent = send(client_fd_, &msg, msg.length(), 0);
+      // Move buffer as a private variable.
+      int n = read(client_fd_, buffer_, 1024);
+      std::cout << "Msg from client: " << buffer_ << "\n" << std::endl;
+
+      int sent = send(client_fd_, &buffer_, sizeof(buffer_), 0);
       if (-1 == sent)
       {
         perror("SERVER: send failed");
         std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
-      } else {
-        // NOTE: DEBUGGING
-        printf("SERVER: Sent %d bytes to client: %s\n", sent, inet_ntoa(client_.sin_addr));
-        std::cout << "SERVER: Message sent was: \n" << msg << std::endl;
       }
 
       close(client_fd_);
