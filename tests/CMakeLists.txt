@@ -10,7 +10,6 @@ set(TEST_BINARY ${PROJECT_NAME}_test)
 
 # Include the test files as an executable.
 add_executable(${TEST_BINARY}
-                test_tcp-server.cpp
                 test_raft-node.cpp)
 
 # Link the libraries to the test binary.
