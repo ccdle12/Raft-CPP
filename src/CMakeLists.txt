@@ -9,6 +9,7 @@ add_executable(
   main.cpp
   server.h
   client.h
+  constants.h
 )
 
 # Linking (binary, to a library)
