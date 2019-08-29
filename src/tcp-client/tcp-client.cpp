@@ -1,5 +1,13 @@
 #include "tcp-client.h"
 
+TCPClient::TCPClient(const std::string& address, unsigned int port, int IPVersion) : port_{port}, address_{address} 
+{
+    if (IPVersion != AF_INET && IPVersion != AF_INET6)
+        throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
+
+    IPV_ = IPVersion;
+}; 
+
 // Send is the interface implementation of Client. This will send data to a 
 // specified server.
 void TCPClient::Send(const std::string& msg)
@@ -18,7 +26,7 @@ void TCPClient::Send(const std::string& msg)
 
 void TCPClient::Socket()
 {
-  if ( -1 == (sock_fd_ = socket(kIPV_, kProtocolType_, 0)))
+  if ( -1 == (sock_fd_ = socket(IPV_, kProtocolType_, 0)))
   {
      throw ErrMsg("Unable to create socket\n"); 
   }
@@ -26,10 +34,10 @@ void TCPClient::Socket()
 
 void TCPClient::Bind()
 {
-  server_addr_.sin_family = kIPV_; 
+  server_addr_.sin_family = IPV_;
   server_addr_.sin_port = htons(port_); 
 
-  if (inet_pton(kIPV_, address_.c_str(), &server_addr_.sin_addr) <= 0)
+  if (inet_pton(IPV_, address_.c_str(), &server_addr_.sin_addr) <= 0)
   {
     throw ErrMsg("invalid address\n");
   }
@@ -58,4 +66,11 @@ void TCPClient::SendMsg(const std::string& msg)
 const std::string& TCPClient::GetBuffer() const
 {
   return buffer_;
+}
+
+
+TCPClient::~TCPClient()
+{
+  std::cout << "Closing file descriptor" << std::endl;
+  close(sock_fd_);
 }
