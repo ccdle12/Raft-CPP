@@ -24,13 +24,19 @@ class TCPClient : public Client {
 
    // Member Variables.
    unsigned int port_;
-   int sock_fd_, server_res_;
+   /* int sock_fd_, server_res_; */
+   int server_res_;
    sockaddr_in server_addr_;
    char buffer_[1024];
    std::string address_;
 
+   // Socket Variables.
+   int socket_file_descriptor_;
+
    // Internal Methods.
-   void Socket();
+   bool is_an_ipv(const int ip_version) const;
+   void create_socket();
+   bool is_socket_open(const int socket_fd) const;
    void Bind();
    void Connect();
 
