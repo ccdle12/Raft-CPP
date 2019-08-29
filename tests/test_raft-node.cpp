@@ -1,18 +1,12 @@
 #include <gtest/gtest.h>
 #include "raft-node/raft-node.h"
+# include "constants.h"
 #include <memory>
 #include <thread>
 
-const std::string LOCAL_HOST="127.0.0.1";
-const unsigned int LOCAL_PORT=5041;
-
-TEST(TestRaftNodeInit, UnitTest) {
-    RaftNode node = RaftNode(LOCAL_HOST, LOCAL_PORT); 
-}
-
-TEST(TestRaftNodeMsg, IntegrationTest) {
+TEST(TestRaftNode, SendSimpleMessage) {
     // Create Nodes and run them on different threads.
-    RaftNode node = RaftNode(LOCAL_HOST, LOCAL_PORT); 
+    RaftNode node = RaftNode(LOCAL_HOST, DEFAULT_PORT); 
     std::thread t1(&RaftNode::Run, &node);
     t1.detach();
 
