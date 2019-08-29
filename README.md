@@ -15,6 +15,6 @@ $ /gtest
 $ mkdir ./build
 $ cd ./build
 $ cmake ..
-$ make
+$ make -j2
 $ ctest -VV
 ```
