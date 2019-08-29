@@ -48,7 +48,7 @@ void TCPServer::Hint()
 // Bind will attach the IP and Port.
 void TCPServer::Bind()
 {
-  if ( -1 == (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))))
+  if ( -1 == (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))) )
   {
     throw ErrMsg("Unable to bind hint to socket file descriptor");
   }
@@ -58,7 +58,7 @@ void TCPServer::Bind()
 void TCPServer::InitListen()
 {
     // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ( -1 == (listen(sock_fd_, 5)))
+    if ( -1 == (listen(sock_fd_, 5)) )
     {
       throw ErrMsg("Unable to listen on socket");
     }
@@ -105,3 +105,8 @@ void TCPServer::Close() const
   close(sock_fd_);
 }
 
+TCPServer::~TCPServer()
+{
+  std::cout << "Closing file_descriptor" << std::endl;
+  close(sock_fd_);
+}
