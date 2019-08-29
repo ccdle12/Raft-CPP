@@ -9,6 +9,7 @@
 class TCPServer : public Server {
     public:
       TCPServer(unsigned int port) : port_{port} {};
+      ~TCPServer();
       void Listen() override;
       void Close() const override;
 
