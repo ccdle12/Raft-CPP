@@ -23,15 +23,15 @@ class TCPClient : public Client {
    const int k_tcp_stream_ = SOCK_STREAM;
 
    // Member Variables.
-   unsigned int port_;
    char buffer_[1024];
-   std::string address_;
 
    // Socket Variables.
    int socket_file_descriptor_;
 
    // Server Variables.
    int server_res_;
+   std::string address_;
+   unsigned int port_;
    sockaddr_in socket_server_address_;
 
    // Internal Methods.

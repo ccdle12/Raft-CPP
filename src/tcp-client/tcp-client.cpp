@@ -54,12 +54,6 @@ void TCPClient::serialize_server_address()
   }
 }
 
-// Checks if a socket server address was serialized successfully.
-bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
-{
-    return socket_address_result == 1;
-}
-
 // Converts the socket address given - IPV, port number, server address
 // to network bytes. 
 // inet_pton() returns 1 if address was successfully serialized to network 
@@ -70,6 +64,12 @@ int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr)
     sock_addr->sin_port = htons(port_); 
 
     return inet_pton(IPV_, address_.c_str(), &sock_addr->sin_addr);
+}
+
+// Checks if a socket server address was serialized successfully.
+bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
+{
+    return socket_address_result == 1;
 }
 
 // Connects to the server.
