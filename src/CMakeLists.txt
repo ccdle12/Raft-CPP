@@ -8,7 +8,7 @@ add_executable(
   bin_main 
   main.cpp
   server.h
-  client.h
+  network_client.h
   constants.h
 )
 
