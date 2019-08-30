@@ -16,9 +16,6 @@ class TCPClient : public Client {
    int IPV_;
   
   private:
-   // Aliases.
-   typedef std::string ErrMsg;
-
    // Constants.
    const int k_tcp_stream_ = SOCK_STREAM;
 

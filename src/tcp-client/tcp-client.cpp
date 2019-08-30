@@ -77,7 +77,7 @@ void TCPClient::connect_to_server()
 {
   if (connect(socket_file_descriptor_, (sockaddr*)&socket_server_address_, sizeof(socket_server_address_)))
   {
-    throw ErrMsg("Connection attempt failed\n");
+    throw std::runtime_error("Connection attempt to the server failed.");
   }
 }
 
