@@ -30,7 +30,7 @@ class TCPClient : public Client {
 
    // Server Variables.
    int server_res_;
-   std::string address_;
+   std::string server_address_;
    unsigned int port_;
    sockaddr_in socket_server_address_;
 
