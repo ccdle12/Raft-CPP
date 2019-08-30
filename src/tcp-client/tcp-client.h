@@ -24,7 +24,6 @@ class TCPClient : public Client {
 
    // Member Variables.
    unsigned int port_;
-   /* int sock_fd_, server_res_; */
    char buffer_[1024];
    std::string address_;
 
@@ -37,11 +36,14 @@ class TCPClient : public Client {
 
    // Internal Methods.
    bool is_an_ipv(const int ip_version) const;
+
    void create_socket();
    bool is_socket_open(const int socket_fd) const;
+
    void serialize_server_address();
    int initialize_socket_server_address(sockaddr_in *sock_addr);
-   bool is_address_serialized(const int flag) const;
+   bool is_socket_address_serialized(const int socket_address_result) const;
+
    void Connect();
 
    // NOTE: TEMP
