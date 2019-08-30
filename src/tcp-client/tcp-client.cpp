@@ -22,7 +22,7 @@ void TCPClient::Send(const std::string& msg)
     {
       create_socket();    
       serialize_server_address();
-      Connect();
+      connect_to_server();
       SendMsg(msg);
     } catch (std::string e) {
       std::cout << e << std::endl;
@@ -72,7 +72,8 @@ int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr)
     return inet_pton(IPV_, address_.c_str(), &sock_addr->sin_addr);
 }
 
-void TCPClient::Connect()
+// Connects to the server.
+void TCPClient::connect_to_server()
 {
   if (connect(socket_file_descriptor_, (sockaddr*)&socket_server_address_, sizeof(socket_server_address_)))
   {
