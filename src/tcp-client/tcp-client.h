@@ -44,7 +44,7 @@ class TCPClient : public Client {
    int initialize_socket_server_address(sockaddr_in *sock_addr);
    bool is_socket_address_serialized(const int socket_address_result) const;
 
-   void Connect();
+   void connect_to_server();
 
    // NOTE: TEMP
    void SendMsg(const std::string& msg);
