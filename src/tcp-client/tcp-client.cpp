@@ -1,6 +1,6 @@
 #include "tcp-client.h"
 
-TCPClient::TCPClient(const std::string& address, unsigned int port, int ip_version) : port_{port}, address_{address} 
+TCPClient::TCPClient(const std::string& address, unsigned int port, int ip_version) : port_{port}, server_address_{address}
 {
     if (!is_an_ipv(ip_version))
         throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
@@ -63,7 +63,7 @@ int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr)
     sock_addr->sin_family = IPV_;
     sock_addr->sin_port = htons(port_); 
 
-    return inet_pton(IPV_, address_.c_str(), &sock_addr->sin_addr);
+    return inet_pton(IPV_, server_address_.c_str(), &sock_addr->sin_addr);
 }
 
 // Checks if a socket server address was serialized successfully.
