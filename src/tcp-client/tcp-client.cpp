@@ -21,7 +21,7 @@ void TCPClient::Send(const std::string& msg)
     try 
     {
       create_socket();    
-      Bind();
+      serialize_server_address();
       Connect();
       SendMsg(msg);
     } catch (std::string e) {
@@ -33,7 +33,7 @@ void TCPClient::Send(const std::string& msg)
 // Creates a socket using the standard socket() system call.
 void TCPClient::create_socket()
 {
-  socket_file_descriptor_ = socket(IPV_, kProtocolType_, 0);
+  socket_file_descriptor_ = socket(IPV_, k_tcp_stream_, 0);
   if (!is_socket_open(socket_file_descriptor_))
       throw std::runtime_error("Failed to create socket connection");
 }
@@ -44,20 +44,31 @@ bool TCPClient::is_socket_open(const int socket_fd) const
     return -1 != socket_fd;
 }
 
-void TCPClient::Bind()
+// Serializes the IPV_ address to binary, specifically to network byte order.
+void TCPClient::serialize_server_address()
 {
-  server_addr_.sin_family = IPV_;
-  server_addr_.sin_port = htons(port_); 
-
-  if (inet_pton(IPV_, address_.c_str(), &server_addr_.sin_addr) <= 0)
+  int result = initialize_socket_server_address(&socket_server_address_);
+  if (result != 1)
   {
-    throw ErrMsg("invalid address\n");
+    throw std::runtime_error("Failed to serialize server address");
   }
+}
+
+// Converts the socket address given - IPV, port number, server address
+// to network bytes. 
+// inet_pton() returns 1 if address was successfully serialized to network 
+// byte order.
+int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr) 
+{
+    sock_addr->sin_family = IPV_;
+    sock_addr->sin_port = htons(port_); 
+
+    return inet_pton(IPV_, address_.c_str(), &sock_addr->sin_addr);
 }
 
 void TCPClient::Connect()
 {
-  if (connect(socket_file_descriptor_, (sockaddr*)&server_addr_, sizeof(server_addr_)))
+  if (connect(socket_file_descriptor_, (sockaddr*)&socket_server_address_, sizeof(socket_server_address_)))
   {
     throw ErrMsg("Connection attempt failed\n");
   }
