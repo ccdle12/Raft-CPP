@@ -2,7 +2,7 @@
 
 TCPClient::TCPClient(const std::string& address, unsigned int port, int ip_version) : port_{port}, address_{address} 
 {
-    if (is_an_ipv(ip_version))
+    if (!is_an_ipv(ip_version))
         throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
 
     IPV_ = ip_version;
@@ -11,7 +11,7 @@ TCPClient::TCPClient(const std::string& address, unsigned int port, int ip_versi
 // Checks if a passed ip_version conforms to IPV4 or IPV6.
 bool TCPClient::is_an_ipv(const int ip_version) const
 {
-    return ip_version != AF_INET && ip_version != AF_INET6;
+    return ip_version == AF_INET || ip_version == AF_INET6;
 } 
 
 // Send is the interface implementation of Client. This will send a message to a 
@@ -48,10 +48,16 @@ bool TCPClient::is_socket_open(const int socket_fd) const
 void TCPClient::serialize_server_address()
 {
   int result = initialize_socket_server_address(&socket_server_address_);
-  if (result != 1)
+  if (!is_socket_address_serialized(result))
   {
     throw std::runtime_error("Failed to serialize server address");
   }
+}
+
+// Checks if a socket server address was serialized successfully.
+bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
+{
+    return socket_address_result == 1;
 }
 
 // Converts the socket address given - IPV, port number, server address
