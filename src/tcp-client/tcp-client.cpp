@@ -98,7 +98,7 @@ bool TCPClient::is_message_sent(int message_response) const
     return 1 == message_response;
 }
 
-const uint8_t* TCPClient::GetBuffer() const
+const uint8_t* TCPClient::get_buffer() const
 {
   return buffer_;
 }

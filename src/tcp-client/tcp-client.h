@@ -9,7 +9,7 @@ class TCPClient : public NetworkClient {
    TCPClient(const std::string& address, unsigned int port, int ip_version);
    ~TCPClient();
    void Send(const uint8_t msg) override; 
-   const uint8_t* GetBuffer() const override;
+   const uint8_t* get_buffer() const override;
 
    // Member Variables.
    // The Internet Protocol Version for the address of the connection.
