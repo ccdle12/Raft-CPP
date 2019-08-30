@@ -1,15 +1,15 @@
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "../client.h"
+#include "network_client.h"
 #include <string>
 #include <iostream>
 
-class TCPClient : public Client {
+class TCPClient : public NetworkClient {
   public:
    TCPClient(const std::string& address, unsigned int port, int ip_version);
    ~TCPClient();
-   void Send(const std::string& msg) override; 
-   const std::string& GetBuffer() const override;
+   void Send(const uint8_t msg) override; 
+   const uint8_t* GetBuffer() const override;
 
    // Member Variables.
    // The Internet Protocol Version for the address of the connection.
@@ -20,15 +20,15 @@ class TCPClient : public Client {
    const int k_tcp_stream_ = SOCK_STREAM;
 
    // Member Variables.
-   char buffer_[1024];
+   uint8_t buffer_[1024];
 
    // Socket Variables.
    int socket_file_descriptor_;
 
    // Server Variables.
-   int server_res_;
+   int server_response_;
    std::string server_address_;
-   unsigned int port_;
+   unsigned int server_port_;
    sockaddr_in socket_server_address_;
 
    // Internal Methods.
@@ -43,6 +43,7 @@ class TCPClient : public Client {
 
    void connect_to_server();
 
-   // NOTE: TEMP
-   void SendMsg(const std::string& msg);
+   void send_bytes(const uint8_t msg);
+   bool is_message_sent(int message_response) const;
+
 };

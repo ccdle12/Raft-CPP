@@ -1,6 +1,7 @@
 #include "tcp-client.h"
 
-TCPClient::TCPClient(const std::string& address, unsigned int port, int ip_version) : port_{port}, server_address_{address}
+TCPClient::TCPClient(const std::string& address, unsigned int port, 
+        int ip_version) : server_address_{address}, server_port_{port}
 {
     if (!is_an_ipv(ip_version))
         throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
@@ -16,14 +17,14 @@ bool TCPClient::is_an_ipv(const int ip_version) const
 
 // Send is the interface implementation of Client. This will send a message to a 
 // specified server.
-void TCPClient::Send(const std::string& msg)
+void TCPClient::Send(const uint8_t msg)
 {
     try 
     {
       create_socket();    
       serialize_server_address();
       connect_to_server();
-      SendMsg(msg);
+      send_bytes(msg);
     } catch (std::string e) {
       std::cout << e << std::endl;
       exit(1);
@@ -61,7 +62,7 @@ void TCPClient::serialize_server_address()
 int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr) 
 {
     sock_addr->sin_family = IPV_;
-    sock_addr->sin_port = htons(port_); 
+    sock_addr->sin_port = htons(server_port_); 
 
     return inet_pton(IPV_, server_address_.c_str(), &sock_addr->sin_addr);
 }
@@ -69,7 +70,7 @@ int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr)
 // Checks if a socket server address was serialized successfully.
 bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
 {
-    return socket_address_result == 1;
+    return 1 == socket_address_result;
 }
 
 // Connects to the server.
@@ -81,23 +82,26 @@ void TCPClient::connect_to_server()
   }
 }
 
-void TCPClient::SendMsg(const std::string& msg)
+void TCPClient::send_bytes(const uint8_t msg)
 {
-  int sent = send(socket_file_descriptor_, &msg, msg.length(), 0);
-  if (-1 == sent)
+  int response = send(socket_file_descriptor_, &msg, sizeof(msg), 0);
+  if (!is_message_sent(response))
   {
-    std::cout << "Failed to send messge\n" << std::endl;
+    throw std::runtime_error("Connection attempt to the server failed.");
   }
 
-  server_res_ = read(socket_file_descriptor_, buffer_, 1024);
-  printf("CLIENT: Received response from server: %s\n", buffer_);
+  server_response_ = read(socket_file_descriptor_, buffer_, 1024);
 }
 
-const std::string& TCPClient::GetBuffer() const
+bool TCPClient::is_message_sent(int message_response) const
+{
+    return 1 == message_response;
+}
+
+const uint8_t* TCPClient::GetBuffer() const
 {
   return buffer_;
 }
-
 
 TCPClient::~TCPClient()
 {
