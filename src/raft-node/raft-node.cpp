@@ -17,12 +17,12 @@ void RaftNode::RunP2PServer()
   p2p_server_->Listen();
 }
 
-void RaftNode::SendMsg(const std::string& msg)
+void RaftNode::SendMsg(const uint8_t msg)
 {
   p2p_client_->Send(msg);
 }
 
-const std::string& RaftNode::ReadP2PBuffer() const
+const uint8_t* RaftNode::ReadP2PBuffer() const
 {
   return p2p_client_->GetBuffer();
 }
