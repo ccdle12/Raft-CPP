@@ -3,6 +3,7 @@
 # include "constants.h"
 #include <memory>
 #include <thread>
+#include <stdio.h>
 
 TEST(TestRaftNode, SendSimpleMessage) {
     // Create Nodes and run them on different threads.
@@ -14,19 +15,14 @@ TEST(TestRaftNode, SendSimpleMessage) {
     std::thread t2(&RaftNode::Run, &node_2);
     t2.detach();
 
-    // Assert that the ReadP2PBuffer is empty before expecting a response from 
-    // the server.
-    ASSERT_EQ(node_2.ReadP2PBuffer().length(), 0);
-
     // Send a message from node_2 to node_1.
-    std::string msg = "Msg from client";
+    uint8_t msg = 0xB;
     node_2.SendMsg(msg);
     
-    // Read the response from node_1 on node_2 from it's buffer, it should be
+    // Read the response message on node_2 from it's buffer. It should be
     // the same message sent.
-    std::string recv_msg = node_2.ReadP2PBuffer();
-    std::cout << "Returned msg from server: " << recv_msg << "\n" << std::endl;
+    const uint8_t* response = node_2.ReadP2PBuffer();
+    printf("Returned message: %X\n", *response);
 
-    // Assert that the buffer, message received from the server is not empty.
-    ASSERT_GT(recv_msg.length(), 0);
+    ASSERT_EQ(*response, msg);
 }
