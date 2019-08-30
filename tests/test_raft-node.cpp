@@ -25,4 +25,6 @@ TEST(TestRaftNode, SendSimpleMessage) {
     printf("Returned message: %X\n", *response);
 
     ASSERT_EQ(*response, msg);
+    ASSERT_EQ(*response, 11);
+    ASSERT_EQ(*response, 0xB);
 }
