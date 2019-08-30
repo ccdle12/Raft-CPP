@@ -1,10 +1,11 @@
-project(cmake_test_project)
+project(c++_raft)
 cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+message(STATUS "successfully set standard to c++11")
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
