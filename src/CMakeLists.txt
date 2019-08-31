@@ -7,7 +7,7 @@ add_subdirectory(raft-node)
 add_executable(
   bin_main 
   main.cpp
-  server.h
+  network_server.h
   network_client.h
   constants.h
 )
