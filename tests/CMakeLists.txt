@@ -14,7 +14,7 @@ target_link_libraries(${TEST_BINARY}
                       tcp-server
                       tcp-client
                       raft-node
-                      gtest gtest_main
+                      ${GTEST} gtest_main
 )
 
 # Add the tests. 
