@@ -22,7 +22,7 @@ void RaftNode::SendMsg(const uint8_t msg)
   p2p_client_->Send(msg);
 }
 
-const uint8_t* RaftNode::ReadP2PBuffer() const
+const uint8_t* RaftNode::read_p2p_buffer() const
 {
   return p2p_client_->get_buffer();
 }
