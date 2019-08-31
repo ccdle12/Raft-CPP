@@ -75,7 +75,7 @@ void TCPServer::create_server_hint()
   hint_.sin_family = IPV_;
   hint_.sin_port = htons(port_);
   hint_.sin_addr.s_addr = INADDR_ANY;
-  bzero(&TCPServer::hint_.sin_zero, 8); // Pad with zeroes.
+  /* bzero(&TCPServer::hint_.sin_zero, 8); // Pad with zeroes. */
 }
 
 // Binds the server hint with the socket.
