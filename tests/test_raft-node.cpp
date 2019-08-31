@@ -21,7 +21,7 @@ TEST(TestRaftNode, SendSimpleMessage) {
     
     // Read the response message on node_2 from it's buffer. It should be
     // the same message sent.
-    const uint8_t* response = node_2.ReadP2PBuffer();
+    const uint8_t* response = node_2.read_p2p_buffer();
     printf("Returned message: %X\n", *response);
 
     ASSERT_EQ(*response, msg);
