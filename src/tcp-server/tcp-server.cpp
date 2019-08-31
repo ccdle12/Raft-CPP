@@ -1,112 +1,163 @@
 #include "tcp-server.h"
 
-// Listen is the method implementation of the Server interface. It runs the 
-// server by listening on the Port specified via construction.
+TCPServer::TCPServer(unsigned int port, int ip_version) : port_{port}
+{
+    if (!is_an_ipv(ip_version))
+        throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
+
+    IPV_ = ip_version;
+}; 
+
+// Checks if a passed ip_version conforms to IPV4 or IPV6.
+bool TCPServer::is_an_ipv(const int ip_version) const
+{
+    return ip_version == AF_INET || ip_version == AF_INET6;
+} 
+
+// Listen is the method implementation from NetworkServer interface. 
+// It runs the  server by listening on the port specified in the constructor.
 void TCPServer::Listen()
 {
     try {
-      Socket();
-      Hint();
-      Bind();
-      InitListen();
-      Accept();
+      create_socket();
+      create_server_hint();
+      bind_server_to_socket();
+      listen_for_connections();
+      accept_connections();
     } catch (std::string e) {
       std::cout << e << std::endl;
       exit(1);
     }
 }
 
-// Socket is an internal method to initialise a non-blocking socket.
-void TCPServer::Socket()
+// Creates a non-blocking socket.
+void TCPServer::create_socket()
 {
-    if ( -1 == (sock_fd_ = socket(kIPV_, kProtocolType_, 0)))
+    socket_file_descriptor_ = socket(IPV_, k_tcp_stream_, 0);
+    if (!is_socket_open(socket_file_descriptor_))
     {
-        throw ErrMsg("Unable to create socket");
+        throw std::runtime_error("Failed to create socket");
     }
 
-    if ( (fcntl_flags_ = fcntl(sock_fd_, F_GETFL)) == -1)
-    {
-      throw ErrMsg("Unable to set fcntl flags");
-    }
-
-
-    if ( (fcntl(sock_fd_, F_SETFL, fcntl_flags_ | O_NONBLOCK)) == -1)
-    {
-      throw ErrMsg("Unable to set non-blocking flags to socket file descriptor");
+    try {
+        set_socket_to_non_blocking(socket_file_descriptor_);
+    } catch (std::runtime_error exception) {
+        throw exception;
     }
 }
 
-// InitHint is an internal method to initialise the hint.
-void TCPServer::Hint()
+// Checks if a socket was succesfully created.
+bool TCPServer::is_socket_open(const int socket_fd) const 
 {
-  hint_.sin_family = kIPV_;
+    return -1 != socket_fd;
+}
+
+// Sets the flags of a given socket file descriptor to non-blocking. 
+void TCPServer::set_socket_to_non_blocking(int socket) 
+{
+
+    int file_control_flags = fcntl(socket, F_GETFL);
+    if (-1 == file_control_flags)
+    {
+        throw std::runtime_error("Failed to get socket flags");
+    }
+
+    if (-1 == fcntl(socket, F_SETFL, file_control_flags | O_NONBLOCK))
+    {
+        throw std::runtime_error("Failed to set non-blocking flag for socket");
+    }
+}
+
+// Assigns the rules for reaching the socket server.
+// INADDR_ANY = accessible by any address.
+void TCPServer::create_server_hint()
+{
+  hint_.sin_family = IPV_;
   hint_.sin_port = htons(port_);
   hint_.sin_addr.s_addr = INADDR_ANY;
   bzero(&TCPServer::hint_.sin_zero, 8); // Pad with zeroes.
 }
 
-// Bind will attach the IP and Port.
-void TCPServer::Bind()
+// Binds the server hint with the socket.
+void TCPServer::bind_server_to_socket()
 {
-  if ( -1 == (bind(sock_fd_, (sockaddr*)&hint_, sizeof(hint_))) )
+  int response = bind(socket_file_descriptor_, (sockaddr*)&hint_, sizeof(hint_));
+  if (!is_server_bound_to_socket(response))
   {
-    throw ErrMsg("Unable to bind hint to socket file descriptor");
+    throw std::runtime_error("Failed to bind hint to socket file descriptor");
   }
 }
 
-// InitListen will start the server to listen for connections.
-void TCPServer::InitListen()
+// Checks if the server was bound to the socket.
+bool TCPServer::is_server_bound_to_socket(const int bind_response) const 
 {
-    // TODO: Set or use a maximum queue size, currently placeholder = 5;
-    if ( -1 == (listen(sock_fd_, 5)) )
+    return -1 != bind_response;
+}
+
+// Listens on the socket for new connections.
+void TCPServer::listen_for_connections()
+{
+    if ( -1 == (listen(socket_file_descriptor_, k_max_queue_size_)) )
     {
-      throw ErrMsg("Unable to listen on socket");
+        throw std::runtime_error("Failed to listen on the socket.");
     }
 }
 
 // Accept will accept a new connection on the socket.
-void TCPServer::Accept()
+void TCPServer::accept_connections()
 {
-  unsigned int len = sizeof(sockaddr_in);
-  
   while(true)
   {
-    if ( -1 == (client_fd_ = accept(sock_fd_, (sockaddr*)&client_, &len)))
+    int client_file_descriptor = create_client_file_descriptor();
+    if (is_client_connection_open(client_file_descriptor))
     {
-      if (errno == EWOULDBLOCK)
-      {
-        printf("SERVER: No pending connections; sleeping for one second.\n");
-        sleep(1);
-      } else {
-        perror("SERVER: accept error ");
-        throw ErrMsg("SERVER: Error when accepting connection\n");
-      }
-    } else {
-      // TODO: PLACEHOLDER
-      // Move buffer as a private variable.
-      int n = read(client_fd_, buffer_, 1024);
-      std::cout << "Msg from client: " << buffer_ << "\n" << std::endl;
+      read_to_buffer(client_file_descriptor);
 
-      int sent = send(client_fd_, &buffer_, sizeof(buffer_), 0);
-      if (-1 == sent)
+      if (-1 == send(client_file_descriptor, &buffer_, sizeof(buffer_), 0))
       {
         perror("SERVER: send failed");
         std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
       }
 
-      close(client_fd_);
+      close(client_file_descriptor);
     }
+
+    sleep(1);
   }
+}
+
+// Creates a client file descriptor when accepting a connection.
+int TCPServer::create_client_file_descriptor()
+{
+    sockaddr_in client_socket_address;
+    unsigned int socket_addr_size = sizeof(sockaddr_in);
+    int client_file_descriptor = accept(
+        socket_file_descriptor_, (sockaddr*)&client_socket_address, &socket_addr_size
+    );
+    
+    return client_file_descriptor;
+}
+
+// Checks that a client connection is open.
+bool TCPServer::is_client_connection_open(const int client_fd) 
+{
+    return -1 != client_fd; 
+}
+
+// Reads a message from a file_descriptor to the buffer.
+void TCPServer::read_to_buffer(const int file_descriptor)
+{
+    read(file_descriptor, buffer_, 1024);
 }
 
 // Close will force close the tcp-server.
 void TCPServer::Close() const
 {
-  close(sock_fd_);
+  close(socket_file_descriptor_);
 }
 
 TCPServer::~TCPServer()
 {
   std::cout << "Closing file_descriptor" << std::endl;
-  close(sock_fd_);
+  close(socket_file_descriptor_);
 }
