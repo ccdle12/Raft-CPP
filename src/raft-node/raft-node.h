@@ -3,9 +3,9 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <thread>
-#include "tcp-server/tcp-server.h"
 #include "tcp-client/tcp-client.h"
+#include "tcp-server/tcp-server.h"
+#include <thread>
 
 class RaftNode {
   public:

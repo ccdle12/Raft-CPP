@@ -1,6 +1,6 @@
 #include <arpa/inet.h>
-#include <gtest/gtest.h>
 #include "constants.h"
+#include <gtest/gtest.h>
 #include "tcp-client/tcp-client.h"
 
 TEST(TCPClientTest, CorrectIPV) {

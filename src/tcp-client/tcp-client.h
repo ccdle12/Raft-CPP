@@ -1,8 +1,8 @@
 #include <arpa/inet.h>
-#include <unistd.h>
+#include <iostream>
 #include "network_client.h"
 #include <string>
-#include <iostream>
+#include <unistd.h>
 
 class TCPClient : public NetworkClient {
   public:

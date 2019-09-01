@@ -1,9 +1,9 @@
+#include "constants.h"
 #include <gtest/gtest.h>
-#include "raft-node/raft-node.h"
-# include "constants.h"
 #include <memory>
-#include <thread>
+#include "raft-node/raft-node.h"
 #include <stdio.h>
+#include <thread>
 
 TEST(TestRaftNode, SendSimpleMessage) {
     // Create Nodes and run them on different threads.
