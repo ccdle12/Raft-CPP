@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 message(STATUS "successfully set standard to c++11")
 
 set(GTEST "gtest")
-message(STATUS "successfully gtest variable")
+message(STATUS "successfully set gtest variable")
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
