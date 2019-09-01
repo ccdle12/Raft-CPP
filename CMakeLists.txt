@@ -16,5 +16,5 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src) # Add the src directory as subdirectory
 
 enable_testing() # Must always be called from the top most CMakeLists.txt
-add_subdirectory(tests) # Add the tests directory as subdirectory
 add_subdirectory(${GTEST}) # Uses gtest as testing suite, adds the submodule gtest.
+add_subdirectory(tests) # Add the tests directory as subdirectory
