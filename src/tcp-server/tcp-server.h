@@ -1,10 +1,10 @@
 #pragma once
 #include <arpa/inet.h>
-#include <string>
-#include "network_server.h"
-#include <iostream>
-#include <unistd.h>
 #include <fcntl.h>
+#include <iostream>
+#include "network_server.h"
+#include <string>
+#include <unistd.h>
 
 class TCPServer : public NetworkServer {
     public:
