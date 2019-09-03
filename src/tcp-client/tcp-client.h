@@ -32,18 +32,17 @@ class TCPClient : public NetworkClient {
    sockaddr_in socket_server_address_;
 
    // Internal Methods.
-   bool is_an_ipv(const int ip_version) const;
+   inline bool is_an_ipv(const int ip_version) const;
 
    void create_socket();
-   bool is_socket_open(const int socket_fd) const;
+   inline bool is_socket_open(const int socket_fd) const;
 
    void serialize_server_address();
    int initialize_socket_server_address(sockaddr_in *sock_addr);
-   bool is_socket_address_serialized(const int socket_address_result) const;
+   inline bool is_socket_address_serialized(const int socket_address_result) const;
 
    void connect_to_server();
 
    void send_bytes(const uint8_t msg);
-   bool is_message_sent(int message_response) const;
-
+   inline bool is_message_sent(int message_response) const;
 };

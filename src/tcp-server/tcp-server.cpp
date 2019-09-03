@@ -9,7 +9,7 @@ TCPServer::TCPServer(unsigned int port, int ip_version) : port_{port}
 }; 
 
 // Checks if a passed ip_version conforms to IPV4 or IPV6.
-bool TCPServer::is_an_ipv(const int ip_version) const
+inline bool TCPServer::is_an_ipv(const int ip_version) const
 {
     return ip_version == AF_INET || ip_version == AF_INET6;
 } 
@@ -47,7 +47,7 @@ void TCPServer::create_socket()
 }
 
 // Checks if a socket was succesfully created.
-bool TCPServer::is_socket_open(const int socket_fd) const 
+inline bool TCPServer::is_socket_open(const int socket_fd) const 
 {
     return -1 != socket_fd;
 }
@@ -89,7 +89,7 @@ void TCPServer::bind_server_to_socket()
 }
 
 // Checks if the server was bound to the socket.
-bool TCPServer::is_server_bound_to_socket(const int bind_response) const 
+inline bool TCPServer::is_server_bound_to_socket(const int bind_response) const 
 {
     return -1 != bind_response;
 }
@@ -139,7 +139,7 @@ int TCPServer::create_client_file_descriptor()
 }
 
 // Checks that a client connection is open.
-bool TCPServer::is_client_connection_open(const int client_fd) 
+inline bool TCPServer::is_client_connection_open(const int client_fd) 
 {
     return -1 != client_fd; 
 }
