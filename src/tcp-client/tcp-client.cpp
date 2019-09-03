@@ -10,7 +10,7 @@ TCPClient::TCPClient(const std::string& address, unsigned int port,
 }; 
 
 // Checks if a passed ip_version conforms to IPV4 or IPV6.
-bool TCPClient::is_an_ipv(const int ip_version) const
+inline bool TCPClient::is_an_ipv(const int ip_version) const
 {
     return ip_version == AF_INET || ip_version == AF_INET6;
 } 
@@ -40,7 +40,7 @@ void TCPClient::create_socket()
 }
 
 // Checks if a socket was succesfully created.
-bool TCPClient::is_socket_open(const int socket_fd) const 
+inline bool TCPClient::is_socket_open(const int socket_fd) const 
 {
     return -1 != socket_fd;
 }
@@ -68,7 +68,7 @@ int TCPClient::initialize_socket_server_address(sockaddr_in *sock_addr)
 }
 
 // Checks if a socket server address was serialized successfully.
-bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
+inline bool TCPClient::is_socket_address_serialized(const int socket_address_result) const
 {
     return 1 == socket_address_result;
 }
@@ -93,7 +93,7 @@ void TCPClient::send_bytes(const uint8_t msg)
   server_response_ = read(socket_file_descriptor_, buffer_, 1024);
 }
 
-bool TCPClient::is_message_sent(int message_response) const
+inline bool TCPClient::is_message_sent(int message_response) const
 {
     return 1 == message_response;
 }
