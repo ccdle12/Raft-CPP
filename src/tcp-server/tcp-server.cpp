@@ -9,6 +9,13 @@ TCPServer::TCPServer(unsigned int port, int ip_version) : port_{port}
     IPV_ = ip_version;
 }; 
 
+TCPServer::TCPServer(unsigned int port, int ip_version, const ServerEventListener &server_listener) : port_{port}, server_listener_{&server_listener}
+{
+    if (!is_an_ipv(ip_version))
+        throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
+    IPV_ = ip_version;
+}; 
+
 // Checks if a passed ip_version conforms to IPV4 or IPV6.
 inline bool TCPServer::is_an_ipv(const int ip_version) const
 {
@@ -200,6 +207,10 @@ void TCPServer::accept_connections()
           }
           else
           {
+            // TODO(ccdle12): Call the event listener that a message has been
+            // received.
+            server_listener_->MsgReceived();
+
             // We've received a message.
             bool close_conn = false;
 
