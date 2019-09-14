@@ -12,6 +12,13 @@ void RaftNode::Run()
   }
 }
 
+// TODO(ccdle12): First pass at heartbeat implementation.
+void RaftNode::send_heart_beat(const std::string local_host, const int port)
+{
+    // TODO(ccdle12): heartbeat should be taken from a predefined variable.
+    p2p_client_->Send(HEART_BEAT_MSG);
+}
+
 void RaftNode::RunP2PServer()
 {
   p2p_server_->Listen();
@@ -25,4 +32,11 @@ void RaftNode::SendMsg(const uint8_t msg)
 const uint8_t* RaftNode::read_p2p_buffer() const
 {
   return p2p_client_->get_buffer();
+}
+
+// ServerEventListener implementation. The p2p_server will callback to this 
+// method when it receivese a message.
+void RaftNode::MsgReceived() const 
+{
+  std::cout << "DEBUG: CALLBACK WAS RECEIVED FROM THE P2P SERVER" << std::endl;
 }
