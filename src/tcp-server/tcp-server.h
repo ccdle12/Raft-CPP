@@ -2,15 +2,17 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <iostream>
-#include "network_server.h"
 #include <string>
 #include <poll.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include "network_server.h"
+#include "server_event_listener.h"
 
 class TCPServer : public NetworkServer {
     public:
       TCPServer(unsigned int port, int ip_version);
+      TCPServer(unsigned int port, int ip_version, const ServerEventListener &server_listener);
       ~TCPServer();
       void Listen() override;
       void Close() const override;
@@ -30,6 +32,9 @@ class TCPServer : public NetworkServer {
       sockaddr_in hint_;
       int m_listening_socket_;
       uint8_t m_buffer_[1024];
+
+      // Event Listener Interfaces.
+      const ServerEventListener *server_listener_;
 
       // Internal Methods.
       inline bool is_an_ipv(const int ip_version) const;
