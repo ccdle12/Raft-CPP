@@ -50,7 +50,7 @@ inline bool TCPServer::is_socket_open(const int socket_fd) const
     return -1 != socket_fd;
 }
 
-// Sets the socket address to be reusable... (ccdle12) WHY???
+// Sets the socket address to be reusable.
 void TCPServer::set_socket_address_reusable(int socket)
 {
     int on = 1;
@@ -113,8 +113,6 @@ void TCPServer::listen_for_connections()
 }
 
 // Accept will accept a new connection on the socket.
-// TODO(ccdle12): DOES TWO THINGS, create a socket connection and sends a message.
-// Spliy into x2 functions - create socket connection and send message.
 void TCPServer::accept_connections()
 {
     // Creates a poll descriptor set of size 200.
@@ -225,7 +223,6 @@ void TCPServer::accept_connections()
                 break;
               }
 
-              /* read_to_buffer(response); */
               // Send the response back, which is the buffer contents.
               if (-1 == send(fds[i].fd, &m_buffer_, sizeof(m_buffer_), 0))
               {
