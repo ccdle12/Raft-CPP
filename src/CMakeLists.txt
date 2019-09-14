@@ -6,10 +6,11 @@ add_subdirectory(raft-node)
 # Add the executbale main.cpp as outputted as bin_main.
 add_executable(
   bin_main 
+  constants.h
   main.cpp
   network_server.h
   network_client.h
-  constants.h
+  server_event_listener.h
 )
 
 # Linking (binary, to a library)
