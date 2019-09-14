@@ -4,6 +4,8 @@
 #include <iostream>
 #include "network_server.h"
 #include <string>
+#include <poll.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 class TCPServer : public NetworkServer {
@@ -26,15 +28,16 @@ class TCPServer : public NetworkServer {
       // Member Variables.
       unsigned int port_;
       sockaddr_in hint_;
-      int socket_file_descriptor_;
-      uint8_t buffer_[1024];
+      int m_listening_socket_;
+      uint8_t m_buffer_[1024];
 
       // Internal Methods.
       inline bool is_an_ipv(const int ip_version) const;
 
       void create_socket();
       inline bool is_socket_open(const int socket_fd) const;
-      void set_socket_to_non_blocking(int socket);
+      void set_socket_address_reusable(const int socket);
+      void set_socket_to_non_blocking(const int socket);
 
       void create_server_hint();
       void bind_server_to_socket();
@@ -45,5 +48,5 @@ class TCPServer : public NetworkServer {
       void accept_connections();
       int create_client_file_descriptor();
       inline bool is_client_connection_open(const int client_fd);
-      void read_to_buffer(const int file_descriptor);
+      int read_to_buffer(const int file_descriptor);
 };
