@@ -114,10 +114,7 @@ void TCPServer::listen_for_connections()
 // Accept will accept a new connection on the socket.
 void TCPServer::accept_connections()
 {
-    // Creates a poll descriptor set of size 200.
-    /* struct pollfd fds_[200]; */
-
-    // Creates the listener on item 0.
+    // Creates the listener at index 0 of the file descriptors set.
     fds_[0].fd = listening_socket_;
     fds_[0].events = POLLIN;
 
@@ -133,8 +130,7 @@ void TCPServer::accept_connections()
     // End server flag.
     bool end_server = false;
     
-    // 1. Loop that polls.
-    // 2. Loop over nfds_ to find a readable connection. fds_[i].
+    // Loop over file descriptors set to find a readable connection.
     do
     {
       // Poll the file descriptors set for activity.
@@ -268,14 +264,10 @@ void TCPServer::Close() const
 
 void TCPServer::SendResponse(const int fd, uint8_t message)
 {
-  
-  // TODO(ccdle12): connection needs to be closed either way.
   if (-1 == send(fds_[fd].fd, &message, sizeof(message), 0))
   {
      perror("SERVER: send failed");
      std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
-     /* close(fds_[fd].fd); */
-     /* fds_[fd].fd = -1; */
   }
 
      close(fds_[fd].fd);
