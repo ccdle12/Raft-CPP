@@ -9,31 +9,39 @@
 #include "network_server.h"
 #include "server_event_listener.h"
 
+// TODO(ccdle12):
+// - rename all member variables with `m_` prefix.
 class TCPServer : public NetworkServer {
     public:
       TCPServer(unsigned int port, int ip_version);
       TCPServer(unsigned int port, int ip_version, const ServerEventListener &server_listener);
       ~TCPServer();
+
+      // NetworkServer interface implementations.
       void Listen() override;
       void Close() const override;
+      void SendResponse(const int fd, uint8_t message) override;
 
     // Address version, IPV4 or IPV6.
     int IPV_;
 
     private:
       // Constants.
-      const int k_tcp_stream_ = SOCK_STREAM;
+      const int kTCPStream = SOCK_STREAM;
       // TODO(ccdle12): temp max size is 5.
       // also set the size via an overload constructor.
-      const int k_max_queue_size_ = 5;
+      const int kMaxQueueSize = 5;
       
       // Member Variables.
       unsigned int port_;
+      // TODO(ccdle12) do I need hint to be a member variable?
       sockaddr_in hint_;
-      int m_listening_socket_;
-      uint8_t m_buffer_[1024];
+      int listening_socket_;
+      uint8_t buffer_[1024];
+      struct pollfd fds_[200]; /* Array of opened connections */
 
       // Event Listener Interfaces.
+      // NOTE(ccdle12): A little bit dangerous as can be a nullptr.
       const ServerEventListener *server_listener_;
 
       // Internal Methods.
