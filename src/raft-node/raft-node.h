@@ -8,8 +8,8 @@
 #include "tcp-server/tcp-server.h"
 #include "server_event_listener.h"
 
-#define HEART_BEAT_MSG 0x01
-#define ACK 0x02
+static const uint8_t HEART_BEAT_MSG = 0x01;
+static const uint8_t ACK = 0x02;
 
 class RaftNode : public ServerEventListener {
   public:
@@ -27,7 +27,7 @@ class RaftNode : public ServerEventListener {
     void send_heart_beat(const std::string local_host, const int port);
 
     // Event Listener Implementation.
-    void MsgReceived() const override;
+    void MsgReceived(const int index, const uint8_t *message) const override;
 
   private:
     unsigned int p2p_port_;
