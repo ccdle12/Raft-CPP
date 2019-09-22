@@ -8,16 +8,15 @@ add_executable(
   bin_main 
   constants.h
   main.cpp
-  network_server.h
   network_client.h
+  network_server.h
   server_event_listener.h
 )
 
 # Linking (binary, to a library)
 target_link_libraries(
     bin_main 
-    tcp-server
     tcp-client
+    tcp-server
     raft-node
 )
-

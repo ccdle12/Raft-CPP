@@ -38,7 +38,6 @@ const uint8_t* RaftNode::read_p2p_buffer() const
 // method when it receivese a message.
 void RaftNode::MsgReceived(const int fd, const uint8_t *message) const
 {
-  std::cout << "DEBUG: CALLBACK WAS RECEIVED FROM THE P2P SERVER" << std::endl;
   if (HEART_BEAT_MSG == *message)
   {
       p2p_server_->SendResponse(fd, ACK);
