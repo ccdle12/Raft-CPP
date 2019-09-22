@@ -1,14 +1,6 @@
 #include "tcp-server.h"
 
 
-TCPServer::TCPServer(unsigned int port, int ip_version) : port_{port}
-{
-    if (!is_an_ipv(ip_version))
-        throw std::runtime_error("ip_verison must be either: AF_INET (ipv4) or AF_INET6 (ipv6)");
-
-    IPV_ = ip_version;
-}; 
-
 TCPServer::TCPServer(unsigned int port, int ip_version, const ServerEventListener &server_listener) : port_{port}, server_listener_{&server_listener}
 {
     if (!is_an_ipv(ip_version))
@@ -28,14 +20,14 @@ void TCPServer::Listen()
 {
     try {
       create_socket();
-      set_socket_address_reusable(m_listening_socket_);
-      set_socket_to_non_blocking(m_listening_socket_);
+      set_socket_address_reusable(listening_socket_);
+      set_socket_to_non_blocking(listening_socket_);
       create_server_hint();
       bind_server_to_socket();
       listen_for_connections();
       accept_connections();
     } catch (std::string e) {
-      close(m_listening_socket_);
+      close(listening_socket_);
       std::cout << e << std::endl;
       exit(1);
     }
@@ -44,8 +36,8 @@ void TCPServer::Listen()
 // Creates a non-blocking socket.
 void TCPServer::create_socket()
 {
-    m_listening_socket_ = socket(IPV_, k_tcp_stream_, 0);
-    if (!is_socket_open(m_listening_socket_))
+    listening_socket_ = socket(IPV_, kTCPStream, 0);
+    if (!is_socket_open(listening_socket_))
     {
         throw std::runtime_error("Failed to create socket");
     }
@@ -97,7 +89,7 @@ void TCPServer::create_server_hint()
 // Binds the server hint with the socket.
 void TCPServer::bind_server_to_socket()
 {
-  int response = bind(m_listening_socket_, (sockaddr*)&hint_, sizeof(hint_));
+  int response = bind(listening_socket_, (sockaddr*)&hint_, sizeof(hint_));
   if (!is_server_bound_to_socket(response))
   {
     throw std::runtime_error("Failed to bind hint to socket file descriptor");
@@ -113,7 +105,7 @@ inline bool TCPServer::is_server_bound_to_socket(const int bind_response) const
 // Listens on the socket for new connections.
 void TCPServer::listen_for_connections()
 {
-    if ( -1 == (listen(m_listening_socket_, k_max_queue_size_)) )
+    if ( -1 == (listen(listening_socket_, kMaxQueueSize)) )
     {
         throw std::runtime_error("Failed to listen on the socket.");
     }
@@ -123,11 +115,11 @@ void TCPServer::listen_for_connections()
 void TCPServer::accept_connections()
 {
     // Creates a poll descriptor set of size 200.
-    struct pollfd fds[200];
+    /* struct pollfd fds_[200]; */
 
     // Creates the listener on item 0.
-    fds[0].fd = m_listening_socket_;
-    fds[0].events = POLLIN;
+    fds_[0].fd = listening_socket_;
+    fds_[0].events = POLLIN;
 
     // Sets timeout.
     int timeout = 30000;
@@ -142,11 +134,11 @@ void TCPServer::accept_connections()
     bool end_server = false;
     
     // 1. Loop that polls.
-    // 2. Loop over nfds to find a readable connection. fds[i].
+    // 2. Loop over nfds_ to find a readable connection. fds_[i].
     do
     {
       // Poll the file descriptors set for activity.
-      int response = poll(fds, nfds, timeout);
+      int response = poll(fds_, nfds, timeout);
 
       if (response < 0)
       {
@@ -165,18 +157,18 @@ void TCPServer::accept_connections()
       for (int i = 0; i < nfds; i++)
       {
           // No events on this file descriptor, skip.
-          if (fds[i].revents == 0)
+          if (fds_[i].revents == 0)
               continue;
 
           // If the event isn't a POLLIN, there was an error.
-          if (fds[i].revents != POLLIN)
+          if (fds_[i].revents != POLLIN)
           {
-            std::cout << " Error! revents = " << fds[i].revents << std::endl;
+            std::cout << " Error! revents = " << fds_[i].revents << std::endl;
             break;
           }
 
           // The file descriptor index is the listening socket.
-          if (fds[i].fd == m_listening_socket_)
+          if (fds_[i].fd == listening_socket_)
           {
             std::cout << " Listening socket is readable" << std::endl;
 
@@ -199,58 +191,44 @@ void TCPServer::accept_connections()
                 } 
 
                 // Add the new connection to pollfd structure.
-                fds[nfds].fd = new_sd;
-                fds[nfds].events = POLLIN;
+                fds_[nfds].fd = new_sd;
+                fds_[nfds].events = POLLIN;
                 nfds++;
             
               } while(new_sd != -1);
           }
           else
           {
-            // TODO(ccdle12): Call the event listener that a message has been
-            // received.
-            server_listener_->MsgReceived();
 
+            // TODO(ccdle12): move this logic to own function.
+            // Send the index of the fd and the message received.
             // We've received a message.
-            bool close_conn = false;
+            bool event_handled = false;
 
             do
             {
-              // Read the message from the file descriptor to the buffer.
-              if (read_to_buffer(fds[i].fd) < 0)
+              uint8_t buffer [1024]; 
+              int response = recv(fds_[i].fd, buffer, sizeof(buffer), 0);
+              if (response < 0)
               {
                 if (errno != EWOULDBLOCK)
                 {
                   perror("  recv() failed");
-                  close_conn = true;
+                  event_handled = true;
                 }
                 break;
-              } 
-
+              }
               if (response == 0)
               {
                 std::cout << "Connection closed" << std::endl;
-                close_conn = true;
+                event_handled = true;
                 break;
               }
 
-              // Send the response back, which is the buffer contents.
-              if (-1 == send(fds[i].fd, &m_buffer_, sizeof(m_buffer_), 0))
-              {
-                 perror("SERVER: send failed");
-                 std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
-                 close_conn = true;
-                 break;
-              }
+              server_listener_->MsgReceived(i, buffer);
+              event_handled = true;
 
-            } while(close_conn == false);
-            
-            // Close the socket connection and set it in the array to -1.
-            if (close_conn)
-            {
-              close(fds[i].fd);
-              fds[i].fd = -1;
-            }
+            } while(event_handled == false);
           }
     }
 
@@ -263,7 +241,7 @@ int TCPServer::create_client_file_descriptor()
     sockaddr_in client_socket_address;
     unsigned int socket_addr_size = sizeof(sockaddr_in);
     int client_file_descriptor = accept(
-        m_listening_socket_, (sockaddr*)&client_socket_address, &socket_addr_size
+        listening_socket_, (sockaddr*)&client_socket_address, &socket_addr_size
     );
     
     return client_file_descriptor;
@@ -276,19 +254,36 @@ inline bool TCPServer::is_client_connection_open(const int client_fd)
 }
 
 // Reads a message from a file_descriptor to the buffer.
+// TODO(ccdle12): Remove
 int TCPServer::read_to_buffer(const int file_descriptor)
 {
-    return recv(file_descriptor, m_buffer_, sizeof(m_buffer_), 0);
+    return recv(file_descriptor, buffer_, sizeof(buffer_), 0);
 }
 
 // Close will force close the tcp-server.
 void TCPServer::Close() const
 {
-  close(m_listening_socket_);
+  close(listening_socket_);
+}
+
+void TCPServer::SendResponse(const int fd, uint8_t message)
+{
+  
+  // TODO(ccdle12): connection needs to be closed either way.
+  if (-1 == send(fds_[fd].fd, &message, sizeof(message), 0))
+  {
+     perror("SERVER: send failed");
+     std::cout << "SERVER: Failed to send msg to client\n" << std::endl;
+     /* close(fds_[fd].fd); */
+     /* fds_[fd].fd = -1; */
+  }
+
+     close(fds_[fd].fd);
+     fds_[fd].fd = -1;
 }
 
 TCPServer::~TCPServer()
 {
   std::cout << "Closing file_descriptor" << std::endl;
-  close(m_listening_socket_);
+  close(listening_socket_);
 }
