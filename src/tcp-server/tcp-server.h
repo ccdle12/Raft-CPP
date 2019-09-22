@@ -13,7 +13,6 @@
 // - rename all member variables with `m_` prefix.
 class TCPServer : public NetworkServer {
     public:
-      TCPServer(unsigned int port, int ip_version);
       TCPServer(unsigned int port, int ip_version, const ServerEventListener &server_listener);
       ~TCPServer();
 
@@ -37,6 +36,7 @@ class TCPServer : public NetworkServer {
       // TODO(ccdle12) do I need hint to be a member variable?
       sockaddr_in hint_;
       int listening_socket_;
+      //TODO(ccdle12): remove buffer.
       uint8_t buffer_[1024];
       struct pollfd fds_[200]; /* Array of opened connections */
 
