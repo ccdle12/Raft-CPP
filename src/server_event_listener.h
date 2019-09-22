@@ -2,5 +2,5 @@
 
 class ServerEventListener {
   public:
-    virtual void MsgReceived() const = 0;
+   virtual void MsgReceived(const int fd, const uint8_t *message) const = 0;
 };
